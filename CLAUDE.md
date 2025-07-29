@@ -57,6 +57,13 @@ As this is a hardware description project in SystemVerilog, typical tasks will i
   - `v60_regfile_tb.sv` - Register file tests
 - **Test program** includes basic MOV, ADD, NOP, and HALT instructions
 
+### Currently Working Instructions
+- **MOV R, #immediate** - Move 32-bit immediate value to register (Format III)
+- **ADD R, R** - Add register to register with ModR/M encoding (Format I) 
+- **NOP** - No operation (Format V)
+- **HALT** - Halt processor execution (Format V)
+- **Variable instruction lengths**: 1-byte (NOP,HALT), 2-byte (ADD), 5-byte (MOV immediate)
+
 ### Documentation
 - **PDF Reference Manual** split into 7 sections (308 pages total)
 - **README.md** with project description
@@ -131,23 +138,23 @@ This checklist is derived from the processor architecture described in the progr
 - [ ] Memory Management Unit (MMU) - virtual to physical address translation
 - [x] Bus Control Unit (BCU) - memory and I/O interface
 - [x] Execution Unit (EXU) - arithmetic and logic operations
-- [x] Implement instruction format decoders for all 7 formats (Format I-VII)
-  - [x] Format I: Fixed length data instructions using register/register and register/memory addressing modes
-  - [x] Format II: Fixed length data instructions using memory/memory addressing modes and floating point instructions
-  - [x] Format III: Single operand instructions 
-  - [x] Format IV: Conditional branch instructions
-  - [x] Format V: Zero operand instructions
-  - [x] Format VI: Loop instructions
-  - [x] Format VII: Variable length data instructions (character string, bit string, decimal arithmetic)
+- [ ] Implement instruction format decoders for all 7 formats (Format I-VII)
+  - [ ] Format I: Fixed length data instructions using register/register and register/memory addressing modes (partial - basic ADD)
+  - [ ] Format II: Fixed length data instructions using memory/memory addressing modes and floating point instructions
+  - [x] Format III: Single operand instructions (MOV immediate working)
+  - [ ] Format IV: Conditional branch instructions
+  - [x] Format V: Zero operand instructions (NOP, HALT working)
+  - [ ] Format VI: Loop instructions
+  - [ ] Format VII: Variable length data instructions (character string, bit string, decimal arithmetic)
 - [x] Support variable-length instruction encoding (1-7 bytes)
 - [x] Support for instruction format field (mod field) encoding and decoding
 - [ ] Implement all addressing mode encodings from Appendix C (71 different combinations)
 
 #### 1.3 ALU and Functional Units
 - [x] 32-bit arithmetic logic unit
-- [x] Barrel shifter for shift/rotate operations
-- [x] Integer arithmetic operations (add, subtract, multiply, divide)
-- [x] Logical operations (AND, OR, XOR, NOT)
+- [ ] Barrel shifter for shift/rotate operations (basic shifts implemented, not full barrel shifter)
+- [ ] Integer arithmetic operations (add, subtract, multiply, divide) (ADD working, SUB/MUL/DIV in ALU but not instruction-connected)
+- [ ] Logical operations (AND, OR, XOR, NOT) (in ALU but not instruction-connected)
 - [ ] Bit manipulation operations
   - [ ] Bit test and clear (CLR1)
   - [ ] Bit field comparison (CMPBF)
@@ -460,7 +467,7 @@ This checklist is derived from the processor architecture described in the progr
 
 #### 8.2 Test Programs
 - [ ] Basic instruction execution tests
-  - [ ] All arithmetic instructions (ADD, ADDC, ADDDC, SUB, SUBC, SUBDC)
+  - [ ] All arithmetic instructions (ADD, ADDC, ADDDC, SUB, SUBC, SUBDC) (ADD working)
   - [ ] All multiply/divide instructions (MUL, MULU, MULX, MULUX, DIV, DIVU, DIVX, DIVUX)
   - [ ] All floating-point instructions (ADDF, ABSF, MULF, DIVF, NEGF)
   - [ ] All logic instructions (AND, OR, XOR, NOT, ANDBS, ANDNBS, ORBS, ORNBS, NOTBS)
@@ -468,11 +475,11 @@ This checklist is derived from the processor architecture described in the progr
   - [ ] All shift/rotate instructions (ROT, ROTC, SHA, SHL)
   - [ ] All bit reversal instructions (RVBIT, RVBYT)
   - [ ] All control flow instructions (BC, BE, BGE, BGT, BH, BL, BLE, BLT, BN, BNC, BNE, BNH, BNL, BNV, BNZ, BP, BR, DBcc variants, TB, JMP, JSR, BRK, BRKV, BSR, CALL, RET)
-  - [ ] All data movement instructions (MOV, MOVEA, MOVF, MOVS, MOVT, MOVZ, MOVBS, MOVC, MOVCF, MOVCS)
+  - [ ] All data movement instructions (MOV, MOVEA, MOVF, MOVS, MOVT, MOVZ, MOVBS, MOVC, MOVCF, MOVCS) (MOV R,#imm working)
   - [ ] All stack instructions (POP, POPM, PUSH, PUSHM, DISPOSE, PREPARE, RET, RETIS, RETIU, RSR)
   - [ ] All comparison instructions (CMP, CMPBF, CMPC, CMPCF, CMPCS, CMPF)
   - [ ] All conversion instructions (CVT variants, CVTD.PZ, CVTD.ZP)
-  - [ ] All system instructions (CAXI, CHKA, CHLVL, CLR1, CLRTLB, GETATE, GETPSW, GETPTE, GETRA, HALT, LDPR, LDTASK, STPR, STTASK, UPDATE, UPDPSW, UPDPTE)
+  - [ ] All system instructions (CAXI, CHKA, CHLVL, CLR1, CLRTLB, GETATE, GETPSW, GETPTE, GETRA, HALT, LDPR, LDTASK, STPR, STTASK, UPDATE, UPDPSW, UPDPTE) (HALT working)
   - [ ] All interrupt/trap instructions (TRAP, TRAPFL)
   - [ ] All string search instructions (SCH0BS, SCH1BS, SCHC, SKPC)
   - [ ] All floating-point scaling instructions (SCLF)
@@ -484,7 +491,7 @@ This checklist is derived from the processor architecture described in the progr
   - [ ] All decimal arithmetic instructions (SUBDC, SUBRDC)
   - [ ] All floating-point subtraction instructions (SUBF)
   - [ ] All I/O instructions (IN, OUT)
-  - [ ] Special instructions (INC, DEC, NEG, NOP, TEST)
+  - [ ] Special instructions (INC, DEC, NEG, NOP, TEST) (NOP and HALT working)
 - [ ] Memory management tests
 - [ ] Exception handling tests
 - [ ] Interrupt handling tests
