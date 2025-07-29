@@ -35,6 +35,7 @@ module v60_cpu (
     logic [`V60_ADDR_WIDTH-1:0] fetch_pc;
     logic [47:0]                inst_buffer;  // 6-byte instruction buffer
     logic [2:0]                 inst_length;
+    logic [2:0]                 inst_length_reg;  // Registered version
     logic                       inst_valid;
     
     // Control signals
@@ -128,6 +129,7 @@ module v60_cpu (
             psw <= 16'h0000;
             inst_buffer <= 48'h0;
             inst_valid <= 1'b0;
+            inst_length_reg <= 3'b0;
             exception_pending <= 1'b0;
             exception_vector <= 8'h00;
         end else begin
@@ -147,6 +149,8 @@ module v60_cpu (
                     if (decode_illegal) begin
                         exception_pending <= 1'b1;
                         exception_vector <= `V60_VEC_INVALID_OP;
+                    end else begin
+                        inst_length_reg <= decode_length;
                     end
                 end
                 default: ;
@@ -191,21 +195,25 @@ module v60_cpu (
                     state_next = S_EXCEPTION;
                 end else if (inst_valid) begin
                     state_next = S_EXECUTE;
-                    inst_length = decode_length;
                 end
             end
             
             S_EXECUTE: begin
-                // Setup ALU inputs
-                rf_raddr1 = src_reg;
-                rf_raddr2 = dst_reg;
-                alu_a = rf_rdata1;
-                alu_b = (format == `V60_FMT_1) ? immediate : rf_rdata2;
-                
-                if (uses_memory) begin
-                    state_next = S_MEMORY;
+                // Check for HALT instruction
+                if (opcode == 8'hF4) begin
+                    state_next = S_HALT;
                 end else begin
-                    state_next = S_WRITEBACK;
+                    // Setup ALU inputs
+                    rf_raddr1 = src_reg;
+                    rf_raddr2 = dst_reg;
+                    alu_a = rf_rdata1;
+                    alu_b = (format == `V60_FMT_III) ? immediate : rf_rdata2;
+                    
+                    if (uses_memory) begin
+                        state_next = S_MEMORY;
+                    end else begin
+                        state_next = S_WRITEBACK;
+                    end
                 end
             end
             
@@ -223,7 +231,7 @@ module v60_cpu (
                 rf_wdata = uses_memory ? mem_rdata : alu_result;
                 
                 // Update PC
-                pc_next = pc + {29'b0, inst_length};
+                pc_next = pc + {29'b0, inst_length_reg};
                 
                 // Update PSW flags
                 psw_next[`V60_PSW_C] = alu_c_out;

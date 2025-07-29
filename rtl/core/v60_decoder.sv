@@ -24,6 +24,12 @@ module v60_decoder (
     logic [1:0]  displacement_size;
     logic [1:0]  immediate_size;
     
+    // ModR/M decoding signals
+    logic [7:0]  modrm;
+    logic [1:0]  mod_field;
+    logic [2:0]  reg_field;
+    logic [2:0]  rm_field;
+    
     // Extract first opcode byte
     assign opcode_byte = inst[47:40];
     
@@ -142,10 +148,10 @@ module v60_decoder (
             
             // Handle ModR/M byte decoding
             if (has_modrm && inst_length == 3'd1) begin
-                logic [7:0] modrm = inst[39:32];
-                logic [1:0] mod_field = modrm[7:6];
-                logic [2:0] reg_field = modrm[5:3];
-                logic [2:0] rm_field = modrm[2:0];
+                modrm = inst[39:32];
+                mod_field = modrm[7:6];
+                reg_field = modrm[5:3];
+                rm_field = modrm[2:0];
                 
                 inst_length = 3'd2; // At least 2 bytes with ModR/M
                 

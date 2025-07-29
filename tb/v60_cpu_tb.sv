@@ -1,5 +1,5 @@
 `timescale 1ns/1ps
-`include "../rtl/core/v60_defines.sv"
+`include "v60_defines.sv"
 
 module v60_cpu_tb;
 
@@ -68,8 +68,8 @@ module v60_cpu_tb;
                     mem_rdata <= {16'h0, memory[mem_addr[9:0]+1], memory[mem_addr[9:0]]};
                 end
                 2'b10: begin  // Word
-                    mem_rdata <= {memory[mem_addr[9:0]+3], memory[mem_addr[9:0]+2], 
-                                 memory[mem_addr[9:0]+1], memory[mem_addr[9:0]]};
+                    mem_rdata <= {memory[mem_addr[9:0]], memory[mem_addr[9:0]+1], 
+                                 memory[mem_addr[9:0]+2], memory[mem_addr[9:0]+3]};
                 end
                 default: mem_rdata <= 32'hDEAD_BEEF;
             endcase

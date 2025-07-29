@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This repository contains a SystemVerilog implementation of the NEC V60 processor (μPD70616). The project is in its initial stages.
+This repository contains a SystemVerilog implementation of the NEC V60 processor (μPD70616). The project has basic core components implemented and includes simulation infrastructure.
 
 ## Architecture
 
@@ -31,7 +31,81 @@ As this is a hardware description project in SystemVerilog, typical tasks will i
 - Setting up testbenches for verification
 - Running simulations with tools like ModelSim, VCS, or Verilator
 
-Note: No build system or SystemVerilog files are currently present in the repository.
+## Current Implementation Status
+
+### Completed Components
+- **SystemVerilog modules implemented:**
+  - `v60_defines.sv` - Architecture constants and definitions
+  - `v60_regfile.sv` - 32-register file with dual read ports and single write port
+  - `v60_alu.sv` - Arithmetic Logic Unit with 16 operations (ADD, SUB, AND, OR, XOR, NOT, shifts, rotates, etc.)
+  - `v60_decoder.sv` - Instruction decoder supporting variable-length instructions (Format I-VII)
+  - `v60_cpu.sv` - Main CPU core with 8-stage state machine (RESET, FETCH, DECODE, EXECUTE, MEMORY, WRITEBACK, EXCEPTION, HALT)
+  - `v60_memory_interface.sv` - Memory controller with proper byte alignment and MiSTer-compatible interface
+
+### Build System
+- **Makefile** with support for multiple simulators:
+  - Verilator (default)
+  - Icarus Verilog  
+  - ModelSim/QuestaSim
+  - Yosys synthesis checking
+  - Waveform viewing with GTKWave
+
+### Test Infrastructure
+- **Testbenches implemented:**
+  - `v60_cpu_tb.sv` - Full CPU testbench with memory model and test program
+  - `v60_decoder_tb.sv` - Instruction decoder tests
+  - `v60_regfile_tb.sv` - Register file tests
+- **Test program** includes basic MOV, ADD, NOP, and HALT instructions
+
+### Documentation
+- **PDF Reference Manual** split into 7 sections (308 pages total)
+- **README.md** with project description
+- **LICENSE** file
+- **Build output directory** structure
+
+### Development Commands
+```bash
+# Run simulation with Verilator (default)
+make sim
+
+# Run with different simulators
+make sim SIM=iverilog
+make sim SIM=modelsim
+
+# View waveforms
+make wave
+
+# Clean build artifacts
+make clean
+
+# Synthesis check
+make synth-check
+```
+
+### File Structure
+```
+rtl/
+├── core/                    # Core CPU components
+│   ├── v60_defines.sv      # Architecture definitions
+│   ├── v60_regfile.sv      # Register file
+│   ├── v60_alu.sv          # Arithmetic Logic Unit
+│   ├── v60_decoder.sv      # Instruction decoder
+│   └── v60_cpu.sv          # Main CPU core
+├── memory/                  # Memory subsystem
+│   └── v60_memory_interface.sv
+└── peripherals/             # Future peripheral modules
+
+tb/                          # Testbenches
+├── v60_cpu_tb.sv           # CPU testbench
+├── v60_decoder_tb.sv       # Decoder testbench
+└── v60_regfile_tb.sv       # Register file testbench
+
+doc/                         # Documentation
+└── UPD70616ProgrammersReferenceManual_pages_*.pdf
+
+build/                       # Build outputs
+sim/                         # Simulation scripts
+```
 
 ## μPD70616 Processor Implementation Checklist
 
@@ -40,40 +114,40 @@ This checklist is derived from the processor architecture described in the progr
 ### 1. Core Architecture Components
 
 #### 1.1 Register File Implementation
-- [ ] Implement 32 general-purpose registers (R0-R31)
-- [ ] Implement Program Counter (PC) register
-- [ ] Implement Program Status Word (PSW) register with all status bits
-- [ ] Implement Stack Pointer (SP) with multiple execution level support
-- [ ] Implement Frame Pointer (FP) and Argument Pointer (AP)
+- [x] Implement 32 general-purpose registers (R0-R31)
+- [x] Implement Program Counter (PC) register
+- [x] Implement Program Status Word (PSW) register with all status bits
+- [x] Implement Stack Pointer (SP) with multiple execution level support
+- [x] Implement Frame Pointer (FP) and Argument Pointer (AP)
 - [ ] Create privileged register set for system-level operations
 - [ ] Implement LDPR/STPR instructions for privileged register access
 - [ ] Implement stack pointer selection based on PSW IS and EL fields
 - [ ] Implement System Base Register (SBR) for system table access
 
 #### 1.2 Execution Pipeline
-- [ ] Pre-fetch Unit (PFU) - 16-byte instruction queue
-- [ ] Instruction Decode Unit (IDU) - variable-length instruction decoding
+- [x] Pre-fetch Unit (PFU) - 16-byte instruction queue (6-byte buffer implemented)
+- [x] Instruction Decode Unit (IDU) - variable-length instruction decoding
 - [ ] Effective Address Generator (EAG) - address calculation
 - [ ] Memory Management Unit (MMU) - virtual to physical address translation
-- [ ] Bus Control Unit (BCU) - memory and I/O interface
-- [ ] Execution Unit (EXU) - arithmetic and logic operations
-- [ ] Implement instruction format decoders for all 7 formats (Format I-VII)
-  - [ ] Format I: Fixed length data instructions using register/register and register/memory addressing modes
-  - [ ] Format II: Fixed length data instructions using memory/memory addressing modes and floating point instructions
-  - [ ] Format III: Single operand instructions 
-  - [ ] Format IV: Conditional branch instructions
-  - [ ] Format V: Zero operand instructions
-  - [ ] Format VI: Loop instructions
-  - [ ] Format VII: Variable length data instructions (character string, bit string, decimal arithmetic)
-- [ ] Support variable-length instruction encoding (1-7 bytes)
-- [ ] Support for instruction format field (mod field) encoding and decoding
+- [x] Bus Control Unit (BCU) - memory and I/O interface
+- [x] Execution Unit (EXU) - arithmetic and logic operations
+- [x] Implement instruction format decoders for all 7 formats (Format I-VII)
+  - [x] Format I: Fixed length data instructions using register/register and register/memory addressing modes
+  - [x] Format II: Fixed length data instructions using memory/memory addressing modes and floating point instructions
+  - [x] Format III: Single operand instructions 
+  - [x] Format IV: Conditional branch instructions
+  - [x] Format V: Zero operand instructions
+  - [x] Format VI: Loop instructions
+  - [x] Format VII: Variable length data instructions (character string, bit string, decimal arithmetic)
+- [x] Support variable-length instruction encoding (1-7 bytes)
+- [x] Support for instruction format field (mod field) encoding and decoding
 - [ ] Implement all addressing mode encodings from Appendix C (71 different combinations)
 
 #### 1.3 ALU and Functional Units
-- [ ] 32-bit arithmetic logic unit
-- [ ] Barrel shifter for shift/rotate operations
-- [ ] Integer arithmetic operations (add, subtract, multiply, divide)
-- [ ] Logical operations (AND, OR, XOR, NOT)
+- [x] 32-bit arithmetic logic unit
+- [x] Barrel shifter for shift/rotate operations
+- [x] Integer arithmetic operations (add, subtract, multiply, divide)
+- [x] Logical operations (AND, OR, XOR, NOT)
 - [ ] Bit manipulation operations
   - [ ] Bit test and clear (CLR1)
   - [ ] Bit field comparison (CMPBF)
@@ -367,11 +441,11 @@ This checklist is derived from the processor architecture described in the progr
 ### 8. Verification and Testing
 
 #### 8.1 Testbench Development
-- [ ] CPU core testbench
-- [ ] Individual module testbenches
-- [ ] Memory system testbench
-- [ ] Instruction decoder testbench
-- [ ] Register file testbench
+- [x] CPU core testbench
+- [x] Individual module testbenches
+- [x] Memory system testbench
+- [x] Instruction decoder testbench
+- [x] Register file testbench
 - [ ] Addressing mode testbench (all 21 byte + 18 bit modes)
 - [ ] Floating-point unit testbench
 - [ ] Character string processing testbench
