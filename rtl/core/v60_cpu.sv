@@ -264,6 +264,15 @@ module v60_cpu (
         endcase
     end
     
+    // ALU operation selection
+    always_comb begin
+        case (opcode[7:4])
+            4'b0000: alu_op = 4'b0000; // ADD (0x00-0x0F)
+            4'b0010: alu_op = 4'b0001; // SUB (0x20-0x2F) 
+            default: alu_op = 4'b0000; // Default to ADD
+        endcase
+    end
+    
     // Output assignments
     assign pc_out = pc;
     assign psw_out = psw;

@@ -111,7 +111,7 @@ module v60_cpu_tb;
             memory[i] = 8'h00;
         end
         
-        // Simple test program at address 0x000
+        // Test original working program first
         // MOV R0, #0x1234  (B8 34 12 00 00)
         memory[0] = 8'hB8;  // MOV R0, imm32
         memory[1] = 8'h34;

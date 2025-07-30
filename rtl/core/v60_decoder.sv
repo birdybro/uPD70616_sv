@@ -97,6 +97,12 @@ module v60_decoder (
                     has_modrm = 1'b1;
                 end
                 
+                8'b0010_11??: begin  // SUB r, r/m
+                    format = `V60_FMT_V;
+                    data_type = opcode_byte[0] ? `V60_TYPE_WORD : `V60_TYPE_BYTE;
+                    has_modrm = 1'b1;
+                end
+                
                 // Jump/Branch instructions
                 8'b1110_1011: begin  // JMP rel8
                     format = `V60_FMT_III;

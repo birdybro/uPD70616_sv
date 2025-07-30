@@ -12,7 +12,9 @@
       "Bash(mkdir:*)",
       "Bash(make:*)",
       "Bash(iverilog:*)",
-      "Bash(vvp:*)"
+      "Bash(vvp:*)",
+      "Bash(timeout 30s make sim SIM=iverilog)",
+      "Bash(timeout 15s make sim SIM=iverilog)"
     ],
     "deny": []
   }
